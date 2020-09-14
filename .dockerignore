@@ -1,6 +1,8 @@
 .dockerignore
+.gitignore
 lambda.rb
 pages.json
 Rakefile
 smartsheet.json
 submissions.rb
+README.md
