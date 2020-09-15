@@ -155,38 +155,53 @@ class Task
 
     puts "#{to_add.size} submissions to add..."
 
+    to_update.map { |ref_no, submission|
+      puts "Updating #{ref_no} in Smartsheet..."
+      smartsheet_row = submission['smartsheet_row']
+      body = smartsheet_body(ref_no, submission, smartsheet_row[:id])
+      smartsheet.sheets.rows.update(sheet_id: SMARTSHEET_SHEET_ID, body: body)
+    }
+
     to_add.map { |ref_no, submission|
       puts "Adding #{ref_no} to Smartsheet..."
-      prontoforms_data = flatten_prontoforms_answers(submission['prontoforms_submission'].pages)
-      dispatcher = submission['prontoforms_submission'].dispatcher
-      submitted_by = dispatcher.nil? ? '' : dispatcher.display_name
-      body = {
-        cells: MAPPING.map { |column_def|
-          {
-            'columnId' => column_def['id'],
-            'value' => prontoforms_data[column_def['title']]
-          }
-        }.concat([
-          {
-            'columnId' => SMARTSHEET_LINK_TO_SUBMISSION_COLUMN,
-            'value' => "https://live.prontoforms.com/data/v2/#{submission['prontoforms_submission'].id}"
-          },
-          {
-            'columnId' => SMARTSHEET_REFERENCE_NUMBER_COLUMN,
-            'value' => ref_no
-          },
-          {
-            'columnId' => 8657638480209796,
-            'value' => submitted_by
-          },
-          {
-            'columnId' => SMARTSHEET_FORM_STATE_COLUMN,
-            'value' => submission['prontoforms_submission'].state
-          }
-        ])
-      }
+      body = smartsheet_body(ref_no, submission)
       smartsheet.sheets.rows.add(sheet_id: SMARTSHEET_SHEET_ID, body: body)
     }
+  end
+
+  def smartsheet_body(ref_no, submission, row_id = nil)
+    prontoforms_data = flatten_prontoforms_answers(submission['prontoforms_submission'].pages)
+    dispatcher = submission['prontoforms_submission'].dispatcher
+    submitted_by = dispatcher.nil? ? '' : dispatcher.display_name
+    body = {
+      cells: MAPPING.map { |column_def|
+        {
+          'columnId' => column_def['id'],
+          'value' => prontoforms_data[column_def['title']]
+        }
+      }.concat([
+        {
+          'columnId' => SMARTSHEET_LINK_TO_SUBMISSION_COLUMN,
+          'value' => "https://live.prontoforms.com/data/v2/#{submission['prontoforms_submission'].id}"
+        },
+        {
+          'columnId' => SMARTSHEET_REFERENCE_NUMBER_COLUMN,
+          'value' => ref_no
+        },
+        {
+          'columnId' => 8657638480209796,
+          'value' => submitted_by
+        },
+        {
+          'columnId' => SMARTSHEET_FORM_STATE_COLUMN,
+          'value' => submission['prontoforms_submission'].state
+        }
+      ])
+    }
+    if !row_id.nil?
+      body[:id] = row_id
+    end
+    return body
   end
 
   def flatten_prontoforms_answers(pages)
