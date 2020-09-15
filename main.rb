@@ -1,6 +1,9 @@
 require 'smartsheet'
 require 'prontoforms'
 
+require 'dotenv'
+Dotenv.load
+
 # Required environment variables
 SMARTSHEET_API_TOKEN = ENV['SMARTSHEET_API_TOKEN']
 SMARTSHEET_SHEET_ID = ENV['SMARTSHEET_SHEET_ID']

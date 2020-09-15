@@ -6,3 +6,4 @@ Rakefile
 smartsheet.json
 submissions.rb
 README.md
+.env
