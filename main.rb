@@ -14,6 +14,9 @@ PRONTOFORMS_FORM_ID = ENV['PRONTOFORMS_FORM_ID']
 SMARTSHEET_REFERENCE_NUMBER_COLUMN = 1902239039154052
 SMARTSHEET_FORM_STATE_COLUMN = 6405838666524548
 
+SMARTSHEET_LINK_TO_SUBMISSION_COLUMN = 1730565975107460
+
+# Pairing of question labels (title key) and Smartsheet column IDs (id key)
 MAPPING = [
   {
     'id' => 4154038852839300,
@@ -26,10 +29,6 @@ MAPPING = [
   {
     'id' => 7269857237460868,
     'title' => 'Claim Date',
-  },
-  {
-    'id' => 8657638480209796,
-    'title' => 'Submitted By',
   },
   {
     'id' => 6143957330618244,
@@ -156,10 +155,11 @@ class Task
 
     puts "#{to_add.size} submissions to add..."
 
-
     to_add.map { |ref_no, submission|
       puts "Adding #{ref_no} to Smartsheet..."
       prontoforms_data = flatten_prontoforms_answers(submission['prontoforms_submission'].pages)
+      dispatcher = submission['prontoforms_submission'].dispatcher
+      submitted_by = dispatcher.nil? ? '' : dispatcher.display_name
       body = {
         cells: MAPPING.map { |column_def|
           {
@@ -168,8 +168,16 @@ class Task
           }
         }.concat([
           {
+            'columnId' => SMARTSHEET_LINK_TO_SUBMISSION_COLUMN,
+            'value' => "https://live.prontoforms.com/data/v2/#{submission['prontoforms_submission'].id}"
+          },
+          {
             'columnId' => SMARTSHEET_REFERENCE_NUMBER_COLUMN,
             'value' => ref_no
+          },
+          {
+            'columnId' => 8657638480209796,
+            'value' => submitted_by
           },
           {
             'columnId' => SMARTSHEET_FORM_STATE_COLUMN,
