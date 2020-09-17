@@ -1,5 +1,13 @@
 # IFG Claim Management Sync automation
 
+## Overview
+
+This script retrieves all submissions for the Claim Management form in
+ProntoForms and adds or updates the data in a Smartsheet table as
+appropriate. The automation runs in an ECS task in the CaaS cluster
+on a schedule. The AWS resources related to this project have names in the
+form of `IfgClaimManagementSync*`, e.g. `IfgClaimManagementFormSyncUser`.
+
 ## Development
 
 Ensure you have IAM credentials under the `ifg_claim_mgmt_sync_user`
