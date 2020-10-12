@@ -108,7 +108,15 @@ MAPPING = [
   },
   {
     'id' => 2766257610090372,
-    'title' => 'Legal Claim Managed By'
+    'title' => 'Person responsible for managing legal claim'
+  },
+  {
+    'id' => 5969794745821060,
+    'title' => 'Person responsible for managing QC claim'
+  },
+  {
+    'id' => 3717994932135812,
+    'title' => 'Person responsible for managing technical claim'
   }
 ]
 
