@@ -16,107 +16,108 @@ SMARTSHEET_FORM_STATE_COLUMN = 6405838666524548
 
 SMARTSHEET_LINK_TO_SUBMISSION_COLUMN = 1730565975107460
 
-# Pairing of question labels (title key) and Smartsheet column IDs (id key)
+# Pairing of question unique IDs (label key) and Smartsheet column IDs
+# (id key)
 MAPPING = [
   {
     'id' => 4154038852839300,
-    'title' => 'What kind of Claim Management form is it?'
+    'label' => 'KindClaimManagement'
   },
   {
     'id' => 1640357703247748,
-    'title' => 'Claim Number'
+    'label' => 'ClaimNumber'
   },
   {
     'id' => 7269857237460868,
-    'title' => 'Claim Date',
+    'label' => 'ClaimDate',
   },
   {
     'id' => 6143957330618244,
-    'title' => 'Priority',
+    'label' => 'Priority',
   },
   {
     'id' => 3892157516932996,
-    'title' => 'Retail/Grocery Name',
+    'label' => 'RetailGroceryName',
   },
   {
     'id' => 8395757144303492,
-    'title' => 'Importer/Distributor Name',
+    'label' => 'ImporterDistributor',
   },
   {
     'id' => 1077407749826436,
-    'title' => 'Grower/Licensee Name',
+    'label' => 'GrowerLicenseeName',
   },
   {
     'id' => 5581007377196932,
-    'title' => 'Account Number',
+    'label' => 'AccountNumber',
   },
   {
     'id' => 3329207563511684,
-    'title' => 'Variety',
+    'label' => 'Variety',
   },
   {
     'id' => 7832807190882180,
-    'title' => 'Fruit Quality Alarm or Incorrect Labeling',
+    'label' => 'FQorIL',
   },
   {
     'id' => 2203307656669060,
-    'title' => 'Licensee Design or Market Design',
+    'label' => 'LDorMD',
   },
   {
     'id' => 6706907284039556,
-    'title' => 'Root Cause/Investigation',
+    'label' => 'RootCauseInvestigati',
   },
   {
     'id' => 4455107470354308,
-    'title' => 'QA/Technical Comment',
+    'label' => 'QATechnicalComment',
   },
   {
     'id' => 8958707097724804,
-    'title' => 'Legal Team Comment',
+    'label' => 'LegalTeamComment',
   },
   {
     'id' => 57060959250308,
-    'title' => 'Corrective Action',
+    'label' => 'CorrectiveAction',
   },
   {
     'id' => 4560660586620804,
-    'title' => 'Name of Personal Contact',
+    'label' => 'NamePersonalContact',
   },
   {
     'id' => 2308860772935556,
-    'title' => 'Email Address of Personal Contact',
+    'label' => 'EmailAddressPC',
   },
   {
     'id' => 6812460400306052,
-    'title' => 'Communicated with Contact?',
+    'label' => 'CommunicatedContact',
   },
   {
     'id' => 1182960866092932,
-    'title' => 'Has this claim been resolved?',
+    'label' => 'ClaimResolved',
   },
   {
     'id' => 5686560493463428,
-    'title' => 'Claim Status',
+    'label' => 'ClaimStatus',
   },
   {
     'id' => 494864155600772,
-    'title' => 'Country of Fruit Origin',
+    'label' => 'CountryFruitOrigin',
   },
   {
     'id' => 4998463782971268,
-    'title' => 'Destination Market'
+    'label' => 'DestinationMarket'
   },
   {
     'id' => 2766257610090372,
-    'title' => 'Person responsible for managing legal claim'
+    'label' => 'ManageLegalClaim'
   },
   {
     'id' => 5969794745821060,
-    'title' => 'Person responsible for managing QC claim'
+    'label' => 'ManageQCClaim'
   },
   {
     'id' => 3717994932135812,
-    'title' => 'Person responsible for managing technical claim'
+    'label' => 'ManageTechClaim'
   }
 ]
 
@@ -185,7 +186,7 @@ class Task
       cells: MAPPING.map { |column_def|
         {
           'columnId' => column_def['id'],
-          'value' => prontoforms_data[column_def['title']]
+          'value' => prontoforms_data[column_def['label']]
         }
       }.concat([
         {
@@ -217,7 +218,7 @@ class Task
       page_answers = page['sections'].inject({}) { |answers, section|
         section_answers = {}
         section['answers'].each { |answer|
-          section_answers[answer['question']] = answer['values'].first
+          section_answers[answer['label']] = answer['values'].first
         }
         answers.merge section_answers
       }
