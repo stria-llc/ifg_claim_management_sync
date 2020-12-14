@@ -169,12 +169,59 @@ class Task
       smartsheet_row = submission['smartsheet_row']
       body = smartsheet_body(ref_no, submission, smartsheet_row[:id])
       smartsheet.sheets.rows.update(sheet_id: SMARTSHEET_SHEET_ID, body: body)
+      begin
+        if submission['prontoforms_submission'].state == 'Complete'
+          filename = "ProntoForms PDF #{submission['prontoforms_submission'].reference_number}.pdf"
+          attachment = smartsheet.sheets.rows.attachments.list(
+            sheet_id: SMARTSHEET_SHEET_ID,
+            row_id: smartsheet_row[:id]
+          ).fetch(:data).find do |att|
+            att[:name] == filename
+          end
+          # Only attach if not found
+          if attachment.nil? # 23137962003
+            puts submission['prontoforms_submission'].id
+            documents = submission['prontoforms_submission'].documents(populate: true)
+            puts documents.size
+            document = documents.find do |doc|
+              puts doc.type
+              doc.type == 'Pdf'
+            end
+            puts document.id
+            pdf = submission['prontoforms_submission'].download_document(document)
+            smartsheet.sheets.rows.attachments.attach_file(
+              sheet_id: SMARTSHEET_SHEET_ID,
+              row_id: smartsheet_row[:id],
+              file: pdf,
+              filename: filename,
+              file_length: pdf.size
+            )
+          end
+        end
+      rescue => e
+        puts e.message
+      end
     }
 
     to_add.map { |ref_no, submission|
       puts "Adding #{ref_no} to Smartsheet..."
       body = smartsheet_body(ref_no, submission)
       smartsheet.sheets.rows.add(sheet_id: SMARTSHEET_SHEET_ID, body: body)
+      begin
+        document = submission['prontoforms_submission'].documents(populate: true).find do |doc|
+          doc.type == 'Pdf'
+        end
+        pdf = submission['prontoforms_submission'].download_document(document)
+        smartsheet.sheets.rows.attachments.attach_file(
+          sheet_id: SMARTSHEET_SHEET_ID,
+          row_id: smartsheet_row[:id],
+          file: pdf,
+          filename: "ProntoForms PDF #{submission['prontoforms_submission'].reference_number}.pdf",
+          file_length: pdf.size
+        )
+      rescue => e
+        puts e.message
+      end
     }
   end
 
@@ -230,7 +277,7 @@ class Task
     # First, load up all form submissions from ProntoForms
     submissions = prontoforms.form_submissions query: { fids: PRONTOFORMS_FORM_ID }
 
-    while submissions.items.any?
+    while !submissions.nil?
       items = submissions.items
       items.each { |item|
         @form_submissions[item.reference_number] = {

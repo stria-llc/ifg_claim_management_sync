@@ -19,7 +19,7 @@ GEM
       faraday (~> 1.0)
     multipart-post (2.1.1)
     plissken (1.3.1)
-    prontoforms (0.3.1)
+    prontoforms (2.0.0)
       faraday (~> 1.0)
 
 PLATFORMS
@@ -27,7 +27,7 @@ PLATFORMS
 
 DEPENDENCIES
   dotenv
-  prontoforms (~> 0.3)
+  prontoforms (~> 2.0)
   smartsheet!
 
 BUNDLED WITH
